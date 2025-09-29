@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: 248 249 251; /* neutral-50 */
+    --card: 255 255 255; /* white */
+    --muted: 107 114 128; /* gray-500 */
+    --text: 17 24 39; /* gray-900 */
+    --border: 229 231 235; /* gray-200 */
+
+    --brand: 79 70 229; /* indigo-600 */
+    --brand-strong: 67 56 202; /* indigo-700 */
+    --accent: 16 185 129; /* emerald-500 */
+    --warn: 245 158 11; /* amber-500 */
+    --danger: 239 68 68; /* red-500 */
+  }
+
+  .dark {
+    --bg: 17 24 39; /* gray-900 */
+    --card: 31 41 55; /* gray-800 */
+    --muted: 156 163 175; /* gray-400 */
+    --text: 243 244 246; /* gray-100 */
+    --border: 55 65 81; /* gray-700 */
+
+    --brand: 99 102 241; /* indigo-500 */
+    --brand-strong: 79 70 229; /* indigo-600 */
+    --accent: 52 211 153; /* emerald-400 */
+    --warn: 251 191 36; /* amber-400 */
+    --danger: 248 113 113; /* red-400 */
+  }
+
+  html, body, #root {
+    height: 100%;
+    background-color: rgb(var(--bg));
+    color: rgb(var(--text));
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl shadow-lg border;
+    background-color: rgb(var(--card));
+    border-color: rgb(var(--border));
+  }
+  .muted {
+    color: rgb(var(--muted));
+  }
+  .btn {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-md border transition-colors;
+    background-color: rgb(var(--card));
+    border-color: rgb(var(--border));
+    color: rgb(var(--text));
+  }
+  .btn-primary {
+    background-color: rgb(var(--brand));
+    color: white;
+    border-color: transparent;
+  }
+  .surface {
+    background-color: rgb(var(--card));
+    border-color: rgb(var(--border));
+  }
+}
