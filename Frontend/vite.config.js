@@ -3,6 +3,8 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: '/Admin_Dashboard/', // 👈 MUST match your repo name
+  // For Vercel: use '/' (default)
+  // For GitHub Pages: use '/Admin_Dashboard/'
+  base: import.meta.env.VITE_BASE_PATH || '/',
   plugins: [react()],
 })

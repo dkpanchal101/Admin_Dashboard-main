@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { login as apiLogin, register as apiRegister } from "../lib/mockApi";
+// Use real API if VITE_API_BASE_URL is set, otherwise use mock API
+const useRealAPI = import.meta.env.VITE_API_BASE_URL;
+import * as realAPI from "../lib/api.js";
+import * as mockAPI from "../lib/mockApi.js";
+
+// Select API based on environment
+const api = useRealAPI ? realAPI : mockAPI;
 
 const AuthContext = createContext(null);
 
@@ -14,7 +20,18 @@ export const AuthProvider = ({ children }) => {
     
     if (storedUser && storedToken) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
+        
+        // If using real API, verify token is still valid
+        if (useRealAPI && api.getMe) {
+          api.getMe().catch(() => {
+            // Token invalid, clear session
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+            setUser(null);
+          });
+        }
       } catch (e) {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -25,25 +42,41 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await apiLogin(email, password);
-      setUser(response.user);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      localStorage.setItem("token", response.token);
+      const response = await api.login(email, password);
+      // Handle both real API and mock API response formats
+      const user = response.user || response.data?.user;
+      const token = response.token || response.data?.token;
+      
+      if (user) {
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      if (token) {
+        localStorage.setItem("token", token);
+      }
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || "Login failed" };
     }
   };
 
   const register = async (userData) => {
     try {
-      const response = await apiRegister(userData);
-      setUser(response.user);
-      localStorage.setItem("user", JSON.stringify(response.user));
-      localStorage.setItem("token", response.token);
+      const response = await api.register(userData);
+      // Handle both real API and mock API response formats
+      const user = response.user || response.data?.user;
+      const token = response.token || response.data?.token;
+      
+      if (user) {
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      if (token) {
+        localStorage.setItem("token", token);
+      }
       return { success: true };
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || "Registration failed" };
     }
   };
 
@@ -71,4 +104,3 @@ export const useAuth = () => {
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
-
