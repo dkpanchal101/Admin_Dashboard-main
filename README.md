@@ -1,4 +1,4 @@
-# Admin Dashboard - Company Level Project
+# Admin Dashboard 
 
 A comprehensive admin dashboard application with React frontend and Node.js/Express/MongoDB backend.
 
