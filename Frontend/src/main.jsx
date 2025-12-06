@@ -12,7 +12,7 @@ import ErrorBoundary from "./components/common/ErrorBoundary.jsx";
 ReactDOM.createRoot(document.getElementById("root")).render(
     <React.StrictMode>
         <ErrorBoundary>
-            <BrowserRouter basename={import.meta.env.VITE_BASE_PATH || '/'}>
+            <BrowserRouter>
                 <AuthProvider>
                     <ToastProvider>
                         <FilterProvider>
