@@ -1,5 +1,11 @@
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+// Ensure the URL ends with /api
+let baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+if (baseURL && !baseURL.endsWith('/api')) {
+  // If URL doesn't end with /api, append it
+  baseURL = baseURL.endsWith('/') ? `${baseURL}api` : `${baseURL}/api`;
+}
+const API_BASE_URL = baseURL;
 
 // Helper function to make API calls
 async function apiRequest(endpoint, options = {}) {
@@ -19,7 +25,10 @@ async function apiRequest(endpoint, options = {}) {
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    const url = `${API_BASE_URL}${endpoint}`;
+    console.log('API Request:', url, config.method || 'GET');
+    
+    const response = await fetch(url, config);
     
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Request failed' }));
@@ -29,6 +38,10 @@ async function apiRequest(endpoint, options = {}) {
     return await response.json();
   } catch (error) {
     console.error('API Error:', error);
+    // Provide more helpful error messages
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      throw new Error('Cannot connect to server. Please check if the backend is running and CORS is configured correctly.');
+    }
     throw error;
   }
 }
